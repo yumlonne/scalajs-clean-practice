@@ -13,6 +13,10 @@ class ServerListUsecase()(
   ) {
   
   def run(): Unit = {
-    servergateway.list().foreach(presenter.present)
+    presenter.wip()
+    servergateway.list().foreach { serverList =>
+      presenter.done()
+      presenter.present(serverList)
+    }
   }
 }

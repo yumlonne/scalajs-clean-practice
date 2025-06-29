@@ -19,4 +19,12 @@ class ServerListConsolePresenter()(
       s"\t$k: $v"
     }.mkString("Server:\n", "\n", "\n")
   }
+
+  def wip(): Unit = {
+    view.show("fetching...")
+  }
+
+  def done(): Unit = {
+    view.show("done\n")
+  }
 }
