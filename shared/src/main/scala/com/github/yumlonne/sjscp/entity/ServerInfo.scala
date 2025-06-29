@@ -1,12 +1,18 @@
 package com.github.yumlonne.sjscp.entity
 
-case class ServerInfo(
-  id: String,
-  name: String,
-  state: ServerState,
-  spec: String,
-  extra: Map[String, String],
-)
+trait ServerInfo {
+  def id: String
+  def name: String
+  def state: ServerState
+  def spec: String
+  def extra: Map[String, String]
+  def toMap: Map[String, String] = Map(
+    "id" -> id,
+    "name" -> name,
+    "state" -> state.toString,
+    "spec" -> spec,
+  ) ++ extra.map((k, v) => s"extra:$k" -> v)
+}
 
 sealed trait ServerState {
   def canStart: Boolean = false

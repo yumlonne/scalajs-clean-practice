@@ -20,9 +20,6 @@ lazy val shared = project.in(file("shared"))
       "io.circe"                      %%% "circe-parser" % circeVersion,
       "org.scalameta"                 %%% "munit" % "1.0.0" % Test
     ),
-    Compile / npmDependencies ++= Seq(
-      "@aws-sdk/client-ec2" -> "3.521.0"
-    )
   )
 
 // lambdaプロジェクト: AWS Lambda用のJSコードを出力
@@ -33,6 +30,7 @@ lazy val lambda = project.in(file("lambda"))
     name := "lambda",
     scalaJSUseMainModuleInitializer := false, // Lambdaは自動起動せず、exports.handlerで起動される
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    // XXX: Lambda環境にawssdkが入ってるのでサボる
   )
 
 // cliプロジェクト: Node.jsでローカルCLI実行するためのプロジェクト
@@ -43,6 +41,10 @@ lazy val cli = project.in(file("cli"))
     name := "cli",
     scalaJSUseMainModuleInitializer := true, // @main関数を使って自動起動
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    webpackBundlingMode := BundlingMode.Application,
+    Compile / npmDependencies ++= Seq(
+      "@aws-sdk/client-ec2" -> "3.521.0",
+    ),
   )
 
 // ルートプロジェクト（ビルド全体を管理）
