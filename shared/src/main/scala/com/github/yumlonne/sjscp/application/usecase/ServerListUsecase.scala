@@ -1,5 +1,6 @@
 package com.github.yumlonne.sjscp.application.usecase
 
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
 import com.github.yumlonne.sjscp.application.presenter.*
@@ -12,9 +13,9 @@ class ServerListUsecase()(
     ec: ExecutionContext,
   ) {
   
-  def run(): Unit = {
+  def run(): Future[Unit] = {
     presenter.wip()
-    servergateway.list().foreach { serverList =>
+    servergateway.list().map { serverList =>
       presenter.done()
       presenter.present(serverList)
     }

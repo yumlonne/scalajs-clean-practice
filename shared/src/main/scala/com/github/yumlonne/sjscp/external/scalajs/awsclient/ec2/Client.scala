@@ -46,6 +46,49 @@ class Client(region: String) {
         }.toList
       }
   }
+
+  import scala.scalajs.js.JSON // debug
+  def startInstance(instanceId: String)(using ec: ExecutionContext): Future[Option[String]] = {
+    val command = new Facade.StartInstancesCommand(js.Dictionary(
+      "InstanceIds" -> js.Array(instanceId)
+    ))
+
+    client.send(command).toFuture.map { v => 
+      val dynamic = v.asInstanceOf[js.Dynamic]
+      val instance = dynamic.StartingInstances.asInstanceOf[js.Array[js.Dynamic]].toList.head
+      val currentState = instance.CurrentState.Name.asInstanceOf[String]
+      val previousState = instance.PreviousState.Name.asInstanceOf[String]
+
+      if (previousState == currentState)
+        Some(s"State '${previousState}' not changed!!")
+      else 
+        None
+    }.recover {
+      case e =>
+        Some(e.getStackTrace().map(_.toString).mkString("\n"))
+    }
+  }
+
+  def stopInstance(instanceId: String)(using ec: ExecutionContext): Future[Option[String]] = {
+    val command = new Facade.StopInstancesCommand(js.Dictionary(
+      "InstanceIds" -> js.Array(instanceId)
+    ))
+
+    client.send(command).toFuture.map { v =>
+      val dynamic = v.asInstanceOf[js.Dynamic]
+      val instance = dynamic.StoppingInstances.asInstanceOf[js.Array[js.Dynamic]].toList.head
+      val currentState = instance.CurrentState.Name.asInstanceOf[String]
+      val previousState = instance.PreviousState.Name.asInstanceOf[String]
+
+      if (previousState == currentState)
+        Some(s"State '${previousState}' not changed!!")
+      else 
+        None
+    }.recover {
+      case e =>
+        Some(e.getStackTrace().map(_.toString).mkString("\n"))
+    }
+  }
 }
 
 case class AwsEC2ServerInfo(
@@ -61,3 +104,20 @@ case class AwsEC2ServerInfo(
     case s         => ServerState.Indifferent(s)
   }
 }
+
+import io.circe.*
+import io.circe.generic.semiauto.*
+
+private case class InstanceState(
+  Code: Int,
+  Name: String
+)
+
+private case class InstanceTransition(
+  InstanceId: String,
+  PreviousState: InstanceState,
+  CurrentState: InstanceState
+)
+
+given Decoder[InstanceState] = deriveDecoder
+given Decoder[InstanceTransition] = deriveDecoder
