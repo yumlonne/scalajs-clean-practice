@@ -22,15 +22,18 @@ lazy val shared = project.in(file("shared"))
     ),
   )
 
-// lambdaプロジェクト: AWS Lambda用のJSコードを出力
-lazy val lambda = project.in(file("lambda"))
+// slack-lambdaプロジェクト: AWS Lambda用のJSコードを出力
+lazy val slackLambda = project.in(file("slack-lambda"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .dependsOn(shared)
   .settings(
-    name := "lambda",
+    name := "slack-lambda",
     scalaJSUseMainModuleInitializer := false, // Lambdaは自動起動せず、exports.handlerで起動される
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     // XXX: Lambda環境にawssdkが入ってるのでサボる
+    //Compile / npmDependencies ++= Seq(
+    //  "@aws-sdk/client-ec2" -> "3.521.0",
+    //),
   )
 
 // cliプロジェクト: Node.jsでローカルCLI実行するためのプロジェクト
@@ -49,7 +52,7 @@ lazy val cli = project.in(file("cli"))
 
 // ルートプロジェクト（ビルド全体を管理）
 lazy val root = project.in(file("."))
-  .aggregate(shared, lambda, cli) // 各サブプロジェクトを集約
+  .aggregate(shared, slackLambda, cli) // 各サブプロジェクトを集約
   .settings(
     name := "scalajs-clean-practice",
     publish / skip := true // パブリッシュしない設定

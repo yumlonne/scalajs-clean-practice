@@ -52,19 +52,19 @@ resource "terraform_data" "build" {
     sha1(
       join("", concat(
         [for f in fileset("../shared/src/main/scala", "**/*") : filesha1("../shared/src/main/scala/${f}")],
-        [for f in fileset("../lambda/src/main/scala", "**/*") : filesha1("../lambda/src/main/scala/${f}")],
+        [for f in fileset("../slack-lambda/src/main/scala", "**/*") : filesha1("../slack-lambda/src/main/scala/${f}")],
       )),
     ),
   ]
 
   provisioner "local-exec" {
-    command = "cd ../ && sbtn lambda/fastOptJS && cd -"
+    command = "cd ../ && sbtn slackLambda/fastOptJS && cd -"
   }
 }
 
 data "archive_file" "this" {
   type        = "zip"
-  source_file = "../lambda/target/scala-3.7.1/lambda-fastopt/index.js"
+  source_file = "../slack-lambda/target/scala-3.7.1/slack-lambda-fastopt/index.js"
   output_path = "lambda.zip"
 
   depends_on = [terraform_data.build]
