@@ -48,7 +48,7 @@ class Client(region: String) {
   }
 
   import scala.scalajs.js.JSON // debug
-  def startInstance(instanceId: String)(using ec: ExecutionContext): Future[Option[String]] = {
+  def startInstance(instanceId: String)(using ec: ExecutionContext): Future[ServerActionResult] = {
     val command = new Facade.StartInstancesCommand(js.Dictionary(
       "InstanceIds" -> js.Array(instanceId)
     ))
@@ -60,16 +60,16 @@ class Client(region: String) {
       val previousState = instance.PreviousState.Name.asInstanceOf[String]
 
       if (previousState == currentState)
-        Some(s"State '${previousState}' not changed!!")
+        ServerActionResult.AlreadyInExpectedState
       else 
-        None
+        ServerActionResult.Success
     }.recover {
       case e =>
-        Some(e.getStackTrace().map(_.toString).mkString("\n"))
+        ServerActionResult.UnexpectedError(e.getStackTrace().map(_.toString).mkString("\n"))
     }
   }
 
-  def stopInstance(instanceId: String)(using ec: ExecutionContext): Future[Option[String]] = {
+  def stopInstance(instanceId: String)(using ec: ExecutionContext): Future[ServerActionResult] = {
     val command = new Facade.StopInstancesCommand(js.Dictionary(
       "InstanceIds" -> js.Array(instanceId)
     ))
@@ -81,12 +81,12 @@ class Client(region: String) {
       val previousState = instance.PreviousState.Name.asInstanceOf[String]
 
       if (previousState == currentState)
-        Some(s"State '${previousState}' not changed!!")
+        ServerActionResult.AlreadyInExpectedState
       else 
-        None
+        ServerActionResult.Success
     }.recover {
       case e =>
-        Some(e.getStackTrace().map(_.toString).mkString("\n"))
+        ServerActionResult.UnexpectedError(e.getStackTrace().map(_.toString).mkString("\n"))
     }
   }
 }

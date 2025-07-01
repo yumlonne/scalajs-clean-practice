@@ -11,20 +11,22 @@ import scala.concurrent.ExecutionContext
 @main def main() = {
   given ExecutionContext = scala.concurrent.ExecutionContext.global
   given ConsoleView = new ConsoleView()
-  given ServerListPresenter = new ServerListConsolePresenter()
+  given ServerPresenter = new ServerConsolePresenter()
   given client: ec2.Client = new ec2.Client(region = "ap-northeast-1")
   given ServerGateway = new AwsEc2InstanceGateway()
 
-  val serverListUsecase = new ServerListUsecase()
+  val serverUsecase = new ServerUsecase()
 
   mainLoop { input =>
     val tokens = input.split("\\s+").filter(_ != "").toList
     tokens match {
       case "exit" :: _ => Future(false)
-      case "show" :: _ => serverListUsecase.run().map(_ => true)
+      case "show" :: _ => serverUsecase.list().map(_ => true)
       // XXX: 仮実装 clientを直接使うな!!
-      case "start" :: id :: _ => client.startInstance(id).map{ errOpt => errOpt.foreach(println); true }
-      case "stop" :: id :: _ => client.stopInstance(id).map{ errOpt => errOpt.foreach(println); true }
+      //case "start" :: id :: _ => client.startInstance(id).map{ res => println(res.toString); true }
+      //case "stop" :: id :: _ => client.stopInstance(id).map{ res => println(res.toString); true }
+      case "start" :: id :: _ => serverUsecase.start(id).map(_ => true)
+      case "stop" :: id :: _ => serverUsecase.stop(id).map(_ => true)
       case x => println(s"invalid input: $x"); Future(true)
     }
   }

@@ -6,6 +6,7 @@ import com.github.yumlonne.sjscp.external.*
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
+import com.github.yumlonne.sjscp.entity.ServerActionResult
 
 class AwsEc2InstanceGateway()(
   using
@@ -14,6 +15,6 @@ class AwsEc2InstanceGateway()(
 ) extends ServerGateway {
   def list(): Future[List[ServerInfo]] = ec2Client.describeInstances()
 
-  def start(id: String): Future[Option[String]] = ???
-  def stop(id: String): Future[Option[String]] = ???
+  def start(id: String): Future[ServerActionResult] = ec2Client.startInstance(id)
+  def stop(id: String): Future[ServerActionResult] = ec2Client.stopInstance(id)
 }

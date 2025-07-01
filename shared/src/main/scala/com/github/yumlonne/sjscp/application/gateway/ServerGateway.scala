@@ -1,12 +1,12 @@
 package com.github.yumlonne.sjscp.application.gateway
 
 import com.github.yumlonne.sjscp.entity.ServerInfo
+import com.github.yumlonne.sjscp.entity.ServerActionResult
 import scala.concurrent.Future
 
 trait ServerGateway {
   def list(): Future[List[ServerInfo]]
 
-  // 失敗したらメッセージが返る
-  def start(id: String): Future[Option[String]]
-  def stop(id: String): Future[Option[String]]
+  def start(id: String): Future[ServerActionResult]
+  def stop(id: String): Future[ServerActionResult]
 }
