@@ -14,9 +14,9 @@ class ServerController(val tokens: List[String])(
 ) {
   def run(): Future[Unit] = {
     tokens match {
-      case "list" :: Nil => list()
+      case "list"  :: Nil       => list()
       case "start" :: id :: Nil => start(id)
-      case "stop" :: id :: Nil => stop(id)
+      case "stop"  :: id :: Nil => stop(id)
       case x => help(x)
     }
   }
@@ -29,7 +29,6 @@ class ServerController(val tokens: List[String])(
 
   private def help(x: List[String]): Future[Unit] = {
     // ここでヘルプメッセージを出す
-    // TODO: presenter経由にしたいのでpresenterにエラー用のインターフェースをはやす必要がある
     ???
   }
 }

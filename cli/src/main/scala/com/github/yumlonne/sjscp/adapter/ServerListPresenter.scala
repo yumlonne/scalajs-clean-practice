@@ -1,25 +1,28 @@
-package com.github.yumlonne.sjscp.external.implement
+package com.github.yumlonne.sjscp.adapter
 
-import com.github.yumlonne.sjscp.application.presenter.ServerPresenter
 import com.github.yumlonne.sjscp.entity.ServerInfo
-import scala.concurrent.Future
 import com.github.yumlonne.sjscp.entity.ServerActionResult
+import com.github.yumlonne.sjscp.application.presenter.ServerPresenter
+import com.github.yumlonne.sjscp.adapter.ServerListView
 
-class ServerConsolePresenter()(
+import scala.concurrent.Future
+import com.github.yumlonne.sjscp.adapter.ServerListViewModel
+
+class ServerListPresenter()(
   using
-    view: ConsoleView,
+    view: ServerListView,
 ) extends ServerPresenter {
 
   def showServerList(list: List[ServerInfo]): Unit = {
+    val headerOpt = Option.when(list.isEmpty)("サーバーがみつかりませんでした")
     val formatted = list.map(this.formatServerInfo)
-    val msg = formatted.mkString("\n")
-    view.show(msg)
+
+    val vm = ServerListViewModel(headerMessage = headerOpt, servers = formatted)
+    view.show(vm)
   }
 
-  private def formatServerInfo(serverInfo: ServerInfo): String = {
-    serverInfo.toMap.toList.sortBy(_._1).map { (k, v) =>
-      s"\t$k: $v"
-    }.mkString("Server:\n", "\n", "\n")
+  private def formatServerInfo(serverInfo: ServerInfo): List[(String, String)] = {
+    serverInfo.toMap.toList.sortBy(_._1)
   }
 
   def showServerActionResult(serverActionResult: ServerActionResult): Unit = {

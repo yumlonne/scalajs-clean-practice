@@ -4,14 +4,15 @@ import com.github.yumlonne.sjscp.entity.*
 import com.github.yumlonne.sjscp.application.gateway.*
 import com.github.yumlonne.sjscp.application.presenter.*
 import com.github.yumlonne.sjscp.application.usecase.*
+import com.github.yumlonne.sjscp.adapter.*
 import com.github.yumlonne.sjscp.external.implement.*
 import com.github.yumlonne.sjscp.external.scalajs.awsclient.ec2
 import scala.concurrent.ExecutionContext
 
 @main def main() = {
   given ExecutionContext = scala.concurrent.ExecutionContext.global
-  given ConsoleView = new ConsoleView()
-  given ServerPresenter = new ServerConsolePresenter()
+  given ServerListView = new ConsoleServerListView()
+  given ServerPresenter = new ServerListPresenter()
   given ec2.Client = new ec2.Client(region = "ap-northeast-1")
   given ServerGateway = new AwsEc2InstanceGateway()
 
@@ -38,6 +39,7 @@ import scalajs.js
 import scalajs.js.Dynamic.global
 import scala.concurrent.{Future, Promise}
 import com.github.yumlonne.sjscp.adapter.ServerController
+import com.github.yumlonne.sjscp.adapter.ServerListView
 def readLine(prompt: String = ""): Future[String] = {
   val readline = global.require("readline")
   val rl = readline.createInterface(
