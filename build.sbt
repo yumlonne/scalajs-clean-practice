@@ -30,6 +30,9 @@ lazy val slackLambda = project.in(file("slack-lambda"))
     name := "slack-lambda",
     scalaJSUseMainModuleInitializer := false, // Lambdaは自動起動せず、exports.handlerで起動される
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    libraryDependencies ++= Seq(
+      "com.softwaremill.sttp.client4" %%% "core" % "4.0.8",
+    ),
     // XXX: Lambda環境にawssdkが入ってるのでサボる
     //Compile / npmDependencies ++= Seq(
     //  "@aws-sdk/client-ec2" -> "3.521.0",
