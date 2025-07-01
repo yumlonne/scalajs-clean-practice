@@ -23,17 +23,13 @@ class ServerController(val tokens: List[String])(
 
   private lazy val serverUsecase = new ServerUsecase()
 
-  private def list(): Future[Unit] = {
-    serverUsecase.list()
-  }
-  private def start(id: String): Future[Unit] = {
-    ???
-  }
-  private def stop(id: String): Future[Unit] = ???
+  private def list(): Future[Unit] = serverUsecase.list()
+  private def start(id: String): Future[Unit] = serverUsecase.start(id)
+  private def stop(id: String): Future[Unit] = serverUsecase.stop(id)
 
   private def help(x: List[String]): Future[Unit] = {
     // ここでヘルプメッセージを出す
-    // TODO: presenter経由にしたいのでpresenterにエラー用のインターフェースをはやす
+    // TODO: presenter経由にしたいのでpresenterにエラー用のインターフェースをはやす必要がある
     ???
   }
 }

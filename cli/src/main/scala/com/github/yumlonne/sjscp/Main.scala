@@ -15,15 +15,11 @@ import scala.concurrent.ExecutionContext
   given ec2.Client = new ec2.Client(region = "ap-northeast-1")
   given ServerGateway = new AwsEc2InstanceGateway()
 
-  val serverUsecase = new ServerUsecase()
-
   mainLoop { input =>
     val tokens = input.split("\\s+").filter(_ != "").toList
     tokens match {
       case "exit" :: _ => Future(false)
-      case "show" :: _ => serverUsecase.list().map(_ => true)
-      case "start" :: id :: _ => serverUsecase.start(id).map(_ => true)
-      case "stop" :: id :: _ => serverUsecase.stop(id).map(_ => true)
+      case "server" :: args => new ServerController(args).run().map(_ => true)
       case x => println(s"invalid input: $x"); Future(true)
     }
   }
@@ -41,6 +37,7 @@ def mainLoop(f: String => Future[Boolean])(using ec: ExecutionContext): Unit = {
 import scalajs.js
 import scalajs.js.Dynamic.global
 import scala.concurrent.{Future, Promise}
+import com.github.yumlonne.sjscp.adapter.ServerController
 def readLine(prompt: String = ""): Future[String] = {
   val readline = global.require("readline")
   val rl = readline.createInterface(

@@ -31,6 +31,6 @@ class ServerConsolePresenter()(
   }
 
   def done(): Unit = {
-    view.show("done!\n")
+    // コンソールの場合終わったことは必要な情報の出力によって明示されるため何もしない
   }
 }
