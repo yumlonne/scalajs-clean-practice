@@ -30,10 +30,10 @@ class ServerListPresenter()(
   }
 
   def wip(): Unit = {
-    view.show("now processing...")
+    view.showProcessing()
   }
 
   def done(): Unit = {
-    // コンソールの場合終わったことは必要な情報の出力によって明示されるため何もしない
+    view.doneProcessing()
   }
 }

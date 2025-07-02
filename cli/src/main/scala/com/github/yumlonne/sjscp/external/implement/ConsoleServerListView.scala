@@ -25,4 +25,12 @@ class ConsoleServerListView extends ServerListView {
     println(s)
     Future.unit
   }
+
+  def showProcessing(): Future[Unit] = {
+    println("processing...")
+    Future.unit
+  }
+  def doneProcessing(): Future[Unit] = {
+    Future.unit
+  }
 }

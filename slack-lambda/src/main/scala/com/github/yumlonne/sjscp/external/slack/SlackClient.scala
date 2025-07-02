@@ -11,8 +11,9 @@ import io.circe.*, io.circe.parser.*
 import io.circe.generic.semiauto.*
 
 class SlackClient(
+  val botToken: String,
   val channelId: String,
-  val token: String,
+  val timestamp: String, // 起動原因になったメッセージのタイムスタンプ
 )(
   using
     ec: ExecutionContext
@@ -30,7 +31,27 @@ class SlackClient(
 
     basicRequest.post(uri)
       .header("Content-Type", "application/json")
-      .header("Authorization", s"Bearer $token")
+      .header("Authorization", s"Bearer $botToken")
+      .body(payload.asJson.noSpaces)
+      .send(backend)
+      .map(_ => ())
+  }
+
+  // メッセージにリアクションをつける
+  // timestampからメッセージを特定する
+  def reaction(emoji: String): Future[Unit] = {
+    // https://api.slack.com/methods/reactions.add
+    val uri = uri"https://slack.com/api/reactions.add"
+
+    val payload = SlackClient.ReactionPayload(
+      channel = channelId,
+      name = emoji,
+      timestamp = timestamp,
+    )
+
+    basicRequest.post(uri)
+      .header("Content-Type", "application/json")
+      .header("Authorization", s"Bearer $botToken")
       .body(payload.asJson.noSpaces)
       .send(backend)
       .map(_ => ())
@@ -43,4 +64,11 @@ private object SlackClient {
     text: String,
   )
   given Encoder[PostMessagePayload] = deriveEncoder
+
+  case class ReactionPayload(
+    channel: String,
+    name: String,
+    timestamp: String
+  )
+  given Encoder[ReactionPayload] = deriveEncoder
 }

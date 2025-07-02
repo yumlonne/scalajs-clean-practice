@@ -52,6 +52,7 @@ case class SlackEvent(
   `type`: String,
   text: String,
   channel: String,
+  event_ts: String,
 )
 given Decoder[SlackEvent] = deriveDecoder[SlackEvent]
 
@@ -73,7 +74,7 @@ def appMention(event: SlackEvent): Future[js.Dynamic] = {
   // app_mentionが来たのだから必ずbot_user_idは存在するはず
   val tokens = event.text.trim.split("\\s+").toList.dropWhile(_ != s"<$slackBotUserId>").tail
 
-  given SlackClient = new SlackClient(event.channel, slackBotToken)
+  given SlackClient = new SlackClient(slackBotToken, event.channel, event.event_ts)
   val view = new SlackServerListView()
   given ServerListView = view
   given ServerPresenter = new ServerListPresenter()

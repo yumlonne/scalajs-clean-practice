@@ -20,9 +20,19 @@ class SlackServerListView()(
     futures.addOne(slackClient.post(s))
     Future.unit
   }
-// TODO impl
+// TODO slack block kit impl
   def show(servers: ServerListViewModel): Future[Unit] = {
     futures.addOne(slackClient.post(servers.toString))
+    Future.unit
+  }
+
+  def showProcessing(): Future[Unit] = {
+    futures.addOne(slackClient.reaction("eyes"))
+    Future.unit
+  }
+
+  // XXX: リアクションを取り消す?
+  def doneProcessing(): Future[Unit] = {
     Future.unit
   }
 
