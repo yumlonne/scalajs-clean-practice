@@ -6,7 +6,7 @@ import com.github.yumlonne.sjscp.adapter.ServerListViewModel
 import scala.concurrent.Future
 
 class ConsoleServerListView extends ServerListView {
-  def show(vm: ServerListViewModel): Future[Unit] = {
+  def show(vm: ServerListViewModel): Unit = {
     println()
     vm.headerMessage.foreach(println)
 
@@ -18,19 +18,15 @@ class ConsoleServerListView extends ServerListView {
       }.mkString("\n")
 
     println(serversStr)
-    Future.unit
   }
 
-  def show(s: String): Future[Unit] = {
+  def show(s: String): Unit = {
     println(s)
-    Future.unit
   }
 
-  def showProcessing(): Future[Unit] = {
+  def showProcessing(): Unit = {
     println("processing...")
-    Future.unit
   }
-  def doneProcessing(): Future[Unit] = {
-    Future.unit
+  def doneProcessing(): Unit = {
   }
 }

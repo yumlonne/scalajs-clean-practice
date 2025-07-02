@@ -75,8 +75,7 @@ def appMention(event: SlackEvent): Future[js.Dynamic] = {
   val tokens = event.text.trim.split("\\s+").toList.dropWhile(_ != s"<$slackBotUserId>").tail
 
   given SlackClient = new SlackClient(slackBotToken, event.channel, event.event_ts)
-  val view = new SlackServerListView()
-  given ServerListView = view
+  given view: SlackServerListView = new SlackServerListView()
   given ServerPresenter = new ServerListPresenter()
   given ec2.Client = new ec2.Client(region = "ap-northeast-1")
   given ServerGateway = new AwsEc2InstanceGateway()
@@ -87,7 +86,7 @@ def appMention(event: SlackEvent): Future[js.Dynamic] = {
   }
 
   for {
-    _ <- view.result()
+    _ <- view.completed()
     _ <- res
   } yield {
     js.Dynamic.literal(
