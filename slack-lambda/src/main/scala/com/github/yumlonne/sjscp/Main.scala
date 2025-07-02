@@ -48,6 +48,7 @@ def urlVerification(event: Event): Future[js.Dynamic] = {
 import io.circe.*, io.circe.parser.*
 import io.circe.generic.semiauto.*
 import com.github.yumlonne.sjscp.external.slack.SlackClient
+import com.github.yumlonne.sjscp.external.scalajs.EnvironmentVariable
 case class SlackEvent(
   `type`: String,
   text: String,
@@ -67,10 +68,15 @@ import com.github.yumlonne.sjscp.external.scalajs.awsclient.ec2
 import scala.concurrent.ExecutionContext
 def appMention(event: SlackEvent): Future[js.Dynamic] = {
   given ExecutionContext = scala.concurrent.ExecutionContext.global
+  val envVar = new EnvironmentVariable()
 
-  // TODO: envvar定義
-  val slackBotUserId = js.Dynamic.global.process.env.asInstanceOf[js.Dictionary[String]].toMap.apply("SLACK_BOT_USER_ID")
-  val slackBotToken = js.Dynamic.global.process.env.asInstanceOf[js.Dictionary[String]].toMap.apply("SLACK_BOT_TOKEN")
+  val (slackBotUserId, slackBotToken) = (
+      for {
+      userId   <- envVar.getOpt("SLACK_BOT_USER_ID").toRight("環境変数から SLACK_BOT_USER_ID が取得できませんでした")
+      botToken <- envVar.getOpt("SLACK_BOT_TOKEN").toRight("環境変数から SLACK_BOT_TOKEN が取得できませんでした")
+    } yield (userId, botToken)
+  ).fold(msg => throw new RuntimeException(msg), identity)
+
   // app_mentionが来たのだから必ずbot_user_idは存在するはず
   val tokens = event.text.trim.split("\\s+").toList.dropWhile(_ != s"<$slackBotUserId>").tail
 
@@ -86,8 +92,8 @@ def appMention(event: SlackEvent): Future[js.Dynamic] = {
   }
 
   for {
-    _ <- view.completed()
     _ <- res
+    _ <- view.completed()
   } yield {
     js.Dynamic.literal(
       statusCode = 200,

@@ -1,5 +1,7 @@
 package com.github.yumlonne.sjscp.external.slack
 
+import com.github.yumlonne.sjscp.external.slack.blockkit.SlackBlockKit.BlockMessage
+
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext
@@ -37,6 +39,22 @@ class SlackClient(
       .map(_ => ())
   }
 
+  def postBlock(blockMessage: BlockMessage): Future[Unit] = {
+    val uri = uri"https://slack.com/api/chat.postMessage"
+
+    val payload = SlackClient.BlockMessagePayload(
+      channel = channelId,
+      blocks = blockMessage,
+    )
+
+    basicRequest.post(uri)
+      .header("Content-Type", "application/json")
+      .header("Authorization", s"Bearer $botToken")
+      .body(payload.asJson.noSpaces)
+      .send(backend)
+      .map(_ => ())
+  }
+
   // メッセージにリアクションをつける
   // timestampからメッセージを特定する
   def reaction(emoji: String): Future[Unit] = {
@@ -64,6 +82,12 @@ private object SlackClient {
     text: String,
   )
   given Encoder[PostMessagePayload] = deriveEncoder
+
+  case class BlockMessagePayload(
+    channel: String,
+    blocks: BlockMessage,
+  )
+  given Encoder[BlockMessagePayload] = deriveEncoder
 
   case class ReactionPayload(
     channel: String,
