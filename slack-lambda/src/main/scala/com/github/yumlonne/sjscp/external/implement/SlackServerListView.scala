@@ -54,8 +54,8 @@ class SlackServerListView()(
     futures.addOne(slackClient.reaction("eyes"))
   }
 
-  // XXX: リアクションを取り消す?
   def doneProcessing(): Unit = {
+    futures.addOne(slackClient.reaction("white_check_mark"))
   }
 
   def completed()(using ec: ExecutionContext): Future[Unit] = {
