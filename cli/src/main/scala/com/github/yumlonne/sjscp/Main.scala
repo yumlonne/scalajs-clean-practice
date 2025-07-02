@@ -12,7 +12,8 @@ import scala.concurrent.ExecutionContext
 @main def main() = {
   given ExecutionContext = scala.concurrent.ExecutionContext.global
   given ServerListView = new ConsoleServerListView()
-  given ServerPresenter = new ServerListPresenter()
+  given ServerListPresenter = new JPServerListPresenter()
+  given ServerActionPresenter = new JPCatServerActionPresenter()
   given ec2.Client = new ec2.Client(region = "ap-northeast-1")
   given ServerGateway = new AwsEc2InstanceGateway()
 

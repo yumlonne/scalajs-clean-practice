@@ -3,13 +3,15 @@ package com.github.yumlonne.sjscp.adapter
 import com.github.yumlonne.sjscp.application.gateway.ServerGateway
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.github.yumlonne.sjscp.application.usecase.ServerUsecase
-import com.github.yumlonne.sjscp.application.presenter.ServerPresenter
+import com.github.yumlonne.sjscp.application.usecase.ServerListUsecase
+import com.github.yumlonne.sjscp.application.presenter.*
+import com.github.yumlonne.sjscp.application.usecase.ServerActionUsecase
 
 class ServerController(val tokens: List[String])(
   using
     serverGateway: ServerGateway,
-    serverPresenter: ServerPresenter,
+    serverListPresenter: ServerListPresenter,
+    serverActionPresenter: ServerActionPresenter,
     ec: ExecutionContext,
 ) {
   def run(): Future[Unit] = {
@@ -21,11 +23,12 @@ class ServerController(val tokens: List[String])(
     }
   }
 
-  private lazy val serverUsecase = new ServerUsecase()
-
+  private lazy val serverUsecase = new ServerListUsecase()
   private def list(): Future[Unit] = serverUsecase.list()
-  private def start(id: String): Future[Unit] = serverUsecase.start(id)
-  private def stop(id: String): Future[Unit] = serverUsecase.stop(id)
+
+  private lazy val serverActionUsecase = new ServerActionUsecase()
+  private def start(id: String): Future[Unit] = serverActionUsecase.start(id)
+  private def stop(id: String): Future[Unit] = serverActionUsecase.stop(id)
 
   private def help(x: List[String]): Future[Unit] = {
     // ここでヘルプメッセージを出す

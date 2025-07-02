@@ -2,16 +2,16 @@ package com.github.yumlonne.sjscp.adapter
 
 import com.github.yumlonne.sjscp.entity.ServerInfo
 import com.github.yumlonne.sjscp.entity.ServerActionResult
-import com.github.yumlonne.sjscp.application.presenter.ServerPresenter
+import com.github.yumlonne.sjscp.application.presenter.ServerListPresenter
 import com.github.yumlonne.sjscp.adapter.ServerListView
 
 import scala.concurrent.Future
 import com.github.yumlonne.sjscp.adapter.ServerListViewModel
 
-class ServerListPresenter()(
+class JPServerListPresenter()(
   using
     view: ServerListView,
-) extends ServerPresenter {
+) extends ServerListPresenter {
 
   def showServerList(list: List[ServerInfo]): Unit = {
     val headerOpt = Option.when(list.isEmpty)("サーバーがみつかりませんでした")
