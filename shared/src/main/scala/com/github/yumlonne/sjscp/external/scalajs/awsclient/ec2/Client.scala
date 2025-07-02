@@ -6,6 +6,7 @@ import com.github.yumlonne.sjscp.external.scalajs.awsclient.ec2.Facade
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import scalajs.js
+import scala.collection.immutable.ListMap
 
 // js依存だと使いずらいのでScalaっぽくする君
 class Client(region: String) {
@@ -103,6 +104,13 @@ case class AwsEC2ServerInfo(
     case "stopped" => ServerState.Stopped
     case s         => ServerState.Indifferent(s)
   }
+
+  def toMap: Map[String, String] = ListMap(
+    "ID" -> id,
+    "Name" -> name,
+    "State" -> state.toString,
+    "InstanceType" -> spec,
+  ) ++ extra.map((k, v) => s"Tag:$k" -> v)
 }
 
 import io.circe.*

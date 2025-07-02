@@ -1,17 +1,14 @@
 package com.github.yumlonne.sjscp.entity
 
+import scala.collection.immutable.ListMap
+
 trait ServerInfo {
   def id: String
   def name: String
   def state: ServerState
   def spec: String
   def extra: Map[String, String]
-  def toMap: Map[String, String] = Map(
-    "id" -> id,
-    "name" -> name,
-    "state" -> state.toString,
-    "spec" -> spec,
-  ) ++ extra.map((k, v) => s"extra:$k" -> v)
+  def toMap: Map[String, String]
 }
 
 sealed trait ServerState {

@@ -22,7 +22,7 @@ class ServerListPresenter()(
   }
 
   private def formatServerInfo(serverInfo: ServerInfo): List[(String, String)] = {
-    serverInfo.toMap.toList.sortBy(_._1)
+    serverInfo.toMap.toList
   }
 
   def showServerActionResult(serverActionResult: ServerActionResult): Unit = {
