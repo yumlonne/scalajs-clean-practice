@@ -6,7 +6,6 @@ ThisBuild / scalaVersion := scala3Version
 ThisBuild / organization := "com.github.yumlonne.sjscp"
 
 // sharedプロジェクト: lambdaとcliの両方で使用するロジックを定義
-// crossProjectは不要。Scala.js単独プロジェクトにする
 lazy val shared = project.in(file("shared"))
   .settings(
     name := "shared",
@@ -63,11 +62,15 @@ lazy val cliJvm = project.in(file("cli-jvm"))
   .dependsOn(shared)
   .settings(
     name := "cli-jvm",
+    libraryDependencies ++= Seq(
+      "com.github.seratch" %%% "awscala-ec2" % "0.9.+",
+    ),
+    assembly / assemblyJarName := "jvmcli.jar"
   )
 
 // ルートプロジェクト（ビルド全体を管理）
 lazy val root = project.in(file("."))
-  .aggregate(shared, slackLambda, cli) // 各サブプロジェクトを集約
+  .aggregate(shared, slackLambda, cli, cliJvm) // 各サブプロジェクトを集約
   .settings(
     name := "scalajs-clean-practice",
     publish / skip := true // パブリッシュしない設定

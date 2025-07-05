@@ -3,6 +3,7 @@ package com.github.yumlonne.sjscp.external.implement
 import com.github.yumlonne.sjscp.adapter.ServerListView
 import com.github.yumlonne.sjscp.adapter.ServerListViewModel
 
+// XXX: jvm版とscalajs版で共通なので切り出したい
 class ConsoleServerListView extends ServerListView {
   def show(vm: ServerListViewModel): Unit = {
     println()
