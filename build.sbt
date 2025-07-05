@@ -8,11 +8,8 @@ ThisBuild / organization := "com.github.yumlonne.sjscp"
 // sharedプロジェクト: lambdaとcliの両方で使用するロジックを定義
 // crossProjectは不要。Scala.js単独プロジェクトにする
 lazy val shared = project.in(file("shared"))
-  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
     name := "shared",
-    scalaJSUseMainModuleInitializer := false, // 起動用ではない
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     libraryDependencies ++= Seq(
       "com.softwaremill.sttp.client4" %%% "core" % "4.0.8",
       "io.circe"                      %%% "circe-core" % circeVersion,
@@ -21,11 +18,19 @@ lazy val shared = project.in(file("shared"))
       "org.scalameta"                 %%% "munit" % "1.0.0" % Test
     ),
   )
+lazy val sharedScalaJS = project.in(file("shared-scalajs"))
+  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+  .dependsOn(shared)
+  .settings(
+    name := "shared-scalajs",
+    scalaJSUseMainModuleInitializer := false,
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+  )
 
 // slack-lambdaプロジェクト: AWS Lambda用のJSコードを出力
 lazy val slackLambda = project.in(file("slack-lambda"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
-  .dependsOn(shared)
+  .dependsOn(sharedScalaJS)
   .settings(
     name := "slack-lambda",
     scalaJSUseMainModuleInitializer := false, // Lambdaは自動起動せず、exports.handlerで起動される
@@ -42,7 +47,7 @@ lazy val slackLambda = project.in(file("slack-lambda"))
 // cliプロジェクト: Node.jsでローカルCLI実行するためのプロジェクト
 lazy val cli = project.in(file("cli"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
-  .dependsOn(shared)
+  .dependsOn(sharedScalaJS)
   .settings(
     name := "cli",
     scalaJSUseMainModuleInitializer := true, // @main関数を使って自動起動
@@ -51,6 +56,13 @@ lazy val cli = project.in(file("cli"))
     Compile / npmDependencies ++= Seq(
       "@aws-sdk/client-ec2" -> "3.521.0",
     ),
+  )
+
+// cliプロジェクト: JVMでローカルCLI実行するためのプロジェクト
+lazy val cliJvm = project.in(file("cli-jvm"))
+  .dependsOn(shared)
+  .settings(
+    name := "cli-jvm",
   )
 
 // ルートプロジェクト（ビルド全体を管理）
