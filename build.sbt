@@ -27,6 +27,7 @@ lazy val sharedScalaJS = project.in(file("shared-scalajs"))
   )
 
 // slack-lambdaプロジェクト: AWS Lambda用のJSコードを出力
+// sbt slackLambda/fastOptJS でjsを生成
 lazy val slackLambda = project.in(file("slack-lambda"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .dependsOn(sharedScalaJS)
@@ -44,6 +45,7 @@ lazy val slackLambda = project.in(file("slack-lambda"))
   )
 
 // cliプロジェクト: Node.jsでローカルCLI実行するためのプロジェクト
+// sbt cli/fastOptJS でjsを生成
 lazy val cli = project.in(file("cli"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .dependsOn(sharedScalaJS)
@@ -58,6 +60,7 @@ lazy val cli = project.in(file("cli"))
   )
 
 // cliプロジェクト: JVMでローカルCLI実行するためのプロジェクト
+// sbt cliJvm/assembly でjarを生成
 lazy val cliJvm = project.in(file("cli-jvm"))
   .dependsOn(shared)
   .settings(
